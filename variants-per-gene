@@ -22,18 +22,18 @@ for file in files:
         PAT_VARIANT = r'(?P<variant>missense_variant|synonymous_variant)'
             #re.compile(pattern, repl, string): We can combine a regular expression pattern into pattern objects, 
                 #hich can be used for pattern matching. It also helps to search a pattern again without rewriting it
-        PATTERN = re.compile(fr'{PAT_ENSG}.*\b{PAT_VARIANT}\b')
+        fragment = re.compile(fr'{PAT_ENSG}.*\b{PAT_VARIANT}\b')
             #https://realpython.com/python-f-strings/ fr- raw strings
-        with open(file) as fp:
+        with open(file) as doc:
                 # [] - dictionary
-            ensg = []
-            for line in fp:
-                sre = PATTERN.search(line)
-                if not line.startswith('#') and sre:
-                    ensg.append(sre.groups())
-            count = Counter(ensg)
+            dict = []
+            for line in doc:
+                search = fragment.search(line)
+                if not line.startswith('#') and search:
+                    dict.append(search.groups())
+            count = Counter(dict)
                 #print(count)
             output.write(str(count))
             print(str(count))
 output.close()
-fp.close()
+doc.close()
