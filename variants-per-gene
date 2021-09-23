@@ -1,0 +1,39 @@
+import os
+from collections import Counter
+import re
+
+
+files = os.listdir("./")
+for file in files:
+    if file.endswith('vcf_fragment.vcf'): #'vep_piemers.vcf'
+            ###split the path name into a pair root and ext. 
+            #Ext stands for extension and has the extension portion of the specified path while root 
+            #is everything except ext part.
+        new_file_name = os.path.splitext(file)[0] + '_2309variants'
+        output = open(new_file_name + ".txt", "w")
+
+
+            #named groups: instead of referring to them by numbers, groups can be referenced by a name.
+
+            #The syntax for a named group is one of the Python-specific extensions: (?P<name>...)
+            #https://docs.python.org/3/howto/regex.html
+            #\d matches any individual digit, in this case ensg string consists of 11 symbols
+        PAT_ENSG = r'ENSG(?P<ensg>\d{11})'
+        PAT_VARIANT = r'(?P<variant>missense_variant|synonymous_variant)'
+            #re.compile(pattern, repl, string): We can combine a regular expression pattern into pattern objects, 
+                #hich can be used for pattern matching. It also helps to search a pattern again without rewriting it
+        PATTERN = re.compile(fr'{PAT_ENSG}.*\b{PAT_VARIANT}\b')
+            #https://realpython.com/python-f-strings/ fr- raw strings
+        with open(file) as fp:
+                # [] - dictionary
+            ensg = []
+            for line in fp:
+                sre = PATTERN.search(line)
+                if not line.startswith('#') and sre:
+                    ensg.append(sre.groups())
+            count = Counter(ensg)
+                #print(count)
+            output.write(str(count))
+            print(str(count))
+output.close()
+fp.close()
